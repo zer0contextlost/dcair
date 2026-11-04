@@ -1,0 +1,4 @@
+state,name_regex,operator,evidence
+TX,^SHARKA$|^SHARKA LLC,Google,"Google's Midlothian campus is held by Sharka LLC (DCD 2018, TDLR filings): https://www.datacenterdynamics.com/en/news/google-is-behind-500m-sharka-data-center-in-midlothian-texas/"
+TX,^ALLIANCE SITE$,Meta,"Winner LLC fronted Facebook's Fort Worth (AllianceTexas) data center; Facebook confirmed the site in 2015: https://www.datacenterknowledge.com/hyperscalers/reports-1b-facebook-data-center-project-underway-in-texas"
+TX,^MICROSOFT$,Microsoft,"TCEQ site named MICROSOFT in Bexar County (SIC 9999); Microsoft's San Antonio data center campus is in Bexar County. Identity from name+county only."
