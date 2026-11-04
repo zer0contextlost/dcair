@@ -44,7 +44,18 @@ rules as read on 2026-11-04 and were not re-verified row by row.
 | IL | no (records request) | 35 IAC 254 requires annual emission reports from all permitted sources; database not published. |
 | NV | no (records request) | Clark County and NDEP collect annual inventories; only a 2017 NDEP summary is public. Washoe County dropped annual reporting in 2025. |
 
-## 3. Known limits of v1
+## 3. Reporting patterns in the data
+
+- **Carried-forward values.** 45 of 112 facility NOx series with at least 3 years repeat an identical nonzero
+  value in 3 or more years (39 NEI, 5 CARB, 1 TCEQ). Examples: Equinix VDC I (Colorado), NOx 35.67 t every year 2014-2021;
+  Visa O.C.C. South (Colorado), NOx 3.44 t 2014-2021; Winner LLC (Meta, Fort Worth, TX), NOx 3.44 t 2020-2024. We haven't
+  determined how much of this is EPA filling non-reporting years versus facilities resubmitting the same estimate.
+- **CO = NOx.** APS Aligned Energy Data Center (Maricopa) reports CO exactly equal to NOx in all 9 inventories
+  with both (e.g. 9,382 lb each in 2019). Diesel engines don't emit the two in equal amounts.
+- **Real growth inside one consistent source.** Microsoft Broadway Rd (Maricopa): 6.4 t NOx 2021, 13.9, 29.6,
+  28.7, 59.4 t 2025. Maricopa data centers overall: 15 t (7 sites) 2016 to 214 t (12 sites) 2025.
+
+## 4. Known limits of v1
 
 - Reported values are emission-factor estimates. Pollutants and reporting-year definitions differ by state.
 - Hyperscaler sites often sit under shell LLCs. We added the ones with documented evidence (`aliases.csv`);
@@ -53,7 +64,7 @@ rules as read on 2026-11-04 and were not re-verified row by row.
 - Pennsylvania's export was done by hand and isn't scripted.
 - Values flagged by `qa_flag` are kept as reported.
 
-## 4. Next
+## 5. Next
 
 Records requests (Virginia 2015-2023, Washington Ecology annual reports, Illinois annual emission reports),
 OCR of Oregon annual reports (which include generator hours), Ohio EIS files, other California districts.

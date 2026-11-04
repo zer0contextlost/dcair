@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import DC_NAME, CRYPTO, OPS, operator, tiers, HEADLINE, CAS, canon
 
 COLS = ['state', 'source', 'source_url', 'year', 'facility_id', 'facility_name', 'owner', 'operator', 'tier',
-        'county', 'city', 'lat', 'lon', 'naics_or_sic', 'pollutant', 'pollutant_original', 'tons', 'note', 'qa_flag']
+        'county', 'city', 'lat', 'lon', 'naics_or_sic', 'pollutant', 'pollutant_original', 'tons', 'note', 'qa_flag', 'pattern_flag']
 rows = []
 def add(**kw):
     r = {c: kw.get(c, '') for c in COLS}
@@ -203,6 +203,30 @@ for k, rs in series.items():
         if len(others) >= 1 and r['tons'] >= 10 and r['tons'] >= 20 * statistics.median(others):
             r['qa_flag'] = f"check (possible unit error): {r['tons']:.1f} t vs median {statistics.median(others):.2f} t in other years"
 print('qa outliers flagged', sum(1 for r in best if r['qa_flag']))
+
+# Reporting patterns (flag only, values unchanged, still counted in totals):
+#  repeat: the same nonzero value for a facility+pollutant+source in >= 3 years (often carried forward, not re-estimated)
+#  co_equals_nox: CO exactly equal to NOx in the same facility-year (one factor applied to both)
+src_of = lambda r: r['source'].split(' (')[0]
+ser = collections.defaultdict(list)
+for r in best: ser[(r['facility_id'], r['pollutant'], src_of(r))].append(r)
+for rs in ser.values():
+    byval = collections.defaultdict(list)
+    for r in rs:
+        if r['tons'] > 0: byval[round(r['tons'], 4)].append(r)
+    for v, same in byval.items():
+        yrs = sorted({str(r['year']) for r in same})
+        if len(yrs) >= 3:
+            for r in same: r['pattern_flag'] = f"repeat: same value in {len(yrs)} years ({yrs[0]}-{yrs[-1]})"
+fy = collections.defaultdict(dict)
+for r in best:
+    if r['pollutant'] in ('NOX', 'CO'): fy[(r['facility_id'], str(r['year']), src_of(r))].setdefault(r['pollutant'], []).append(r)
+for d in fy.values():
+    if 'NOX' in d and 'CO' in d:
+        n, c = sum(r['tons'] for r in d['NOX']), sum(r['tons'] for r in d['CO'])
+        if n > 0.01 and abs(n - c) < 1e-9:
+            for r in d['NOX'] + d['CO']: r['pattern_flag'] = '; '.join(x for x in (r['pattern_flag'], 'co_equals_nox') if x)
+print('pattern flags', collections.Counter(f.split(':')[0] for r in best for f in r['pattern_flag'].split('; ') if f))
 with open(f'{OUT}/best.csv', 'w', newline='') as fo:
     w = csv.DictWriter(fo, COLS); w.writeheader(); w.writerows(best)
 

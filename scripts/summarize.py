@@ -57,5 +57,17 @@ for op, d in sorted(ops.items(), key=lambda x: -sum(x[1].values())):
     for (st, y), v in d.items():
         if st not in last or int(y) > int(last[st][0]): last[st] = (y, v)
     L.append(f'- {op}: ' + ', '.join(f'{st} {y} {v:,.1f} t' for st, (y, v) in sorted(last.items(), key=lambda x: -x[1][1])))
+allb = list(csv.DictReader(open(f'{OUT}/best.csv')))
+noxs = collections.defaultdict(set); rep = set(); eq = set()
+for r in allb:
+    if r['pollutant'] != 'NOX': continue
+    k = (r['facility_id'], src(r)); noxs[k].add(r['year'])
+    if r['pattern_flag'].startswith('repeat'): rep.add(k)
+    if 'co_equals_nox' in r['pattern_flag']: eq.add((r['facility_id'], r['year'], r['facility_name']))
+multi = {k for k, v in noxs.items() if len(v) >= 3}
+L += ['', '## Reporting patterns (pattern_flag)', '',
+      f'- {len(rep & multi)} of {len(multi)} facility NOx series with 3+ years repeat an identical nonzero value in 3+ years '
+      f'({", ".join(f"{s} {n}" for s, n in collections.Counter(k[1] for k in rep & multi).most_common())}).',
+      f'- CO exactly equals NOx in {len(eq)} facility-years: ' + ', '.join(sorted({n for _, _, n in eq})) + '.']
 open(f'{OUT}/SUMMARY.md', 'w').write('\n'.join(L) + '\n')
 print('\n'.join(L[:40]))

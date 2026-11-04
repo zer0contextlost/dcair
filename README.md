@@ -83,7 +83,7 @@ Details per state in [NOTES.md](NOTES.md).
 | `aliases.csv` | | hand-checked identities (shell LLCs etc.) with evidence |
 
 Columns: `state, source, source_url, year, facility_id, facility_name, owner, operator, tier, county, city,
-lat, lon, naics_or_sic, pollutant, pollutant_original, tons, note, qa_flag`. `tons` = short tons/year.
+lat, lon, naics_or_sic, pollutant, pollutant_original, tons, note, qa_flag, pattern_flag` (`pattern_flag` in `best.csv`). `tons` = short tons/year.
 Pollutants are normalized (`NOX, CO, VOC, SO2, PM25, PM10, PM, NH3, FORMALDEHYDE, BENZENE, ACETALDEHYDE,
 ACROLEIN, 1,3-BUTADIENE, DIESEL_PM`); everything else is `OTHER:<name as reported>` or `GHG:<name>`.
 
@@ -104,6 +104,14 @@ ACROLEIN, 1,3-BUTADIENE, DIESEL_PM`); everything else is `OTHER:<name as reporte
 `qa_flag` marks values of 10 t or more that are at least 20x the same facility's median for that pollutant
 in other years (e.g. Evocative, MA: 0.4 t NOx in 2022, 90.6 t in 2023). Values are never changed.
 Flagged rows are excluded from the summary totals. Some flags may be real step changes.
+
+`pattern_flag` marks two reporting patterns. These rows are kept and counted; the flag says how much to trust
+year-to-year change:
+- `repeat`: the same nonzero value for a facility, pollutant and source in 3 or more years. **45 of the 112
+  facility NOx series with 3+ years contain a repeated value; 39 of those are NEI series** (e.g. Equinix Denver
+  VDC I, 35.67 t every year 2014-2021). A flat line usually means the number was carried forward, not re-estimated.
+- `co_equals_nox`: CO exactly equal to NOx in the same facility-year. All 9 cases are one Maricopa site (APS
+  Aligned Energy Data Center, 2016-2025), which points to one emission factor applied to both pollutants.
 
 ## Reproduce
 

@@ -90,3 +90,8 @@ estimates). QA-flagged values excluded. Each state is its own series; sources an
 - EdgeConneX: CA 2024 1.7 t, TN 2023 0.5 t
 - H5: VA 2024 1.4 t, AZ 2025 1.0 t
 - Yahoo: VA 2024 0.0 t
+
+## Reporting patterns (pattern_flag)
+
+- 45 of 112 facility NOx series with 3+ years repeat an identical nonzero value in 3+ years (EPA NEI facility summary 39, CARB facility criteria emissions 5, TCEQ point source emissions inventory 1).
+- CO exactly equals NOx in 9 facility-years: APS Aligned Energy Data Center, Aps - Aligned Energy Data Center.
